@@ -33,6 +33,14 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
+    public List<Task> getAllTaskByStatus(String status) {
+        List<Task> tasks = getAllTasks();
+        return tasks.stream()
+                .filter(task -> task.getStatus().toString().equals(status))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void addTask(Task task) {
         List<Task> tasks = getAllTasks();
         task.setId(generateTaskId());

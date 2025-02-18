@@ -23,6 +23,9 @@ public class Application {
                     System.out.println("Available commands:");
                     System.out.println("  - help : Show available commands");
                     System.out.println("  - list : List all tasks");
+                    System.out.println("  - list todo : List all tasks with status \"todo\"");
+                    System.out.println("  - list in-progress : List all tasks with status \"in progress\"");
+                    System.out.println("  - list done : List all tasks with status \"done\"");
                     System.out.println("  - add : Add a new task");
                     System.out.println("  - update : Update a task");
                     System.out.println("  - mark-in-progress : Mark a task as \"in progress\"");
@@ -34,6 +37,21 @@ public class Application {
                 case "list":
                     System.out.println("Tasks:");
                     System.out.println(jsonRepository.getAllTasks());
+                    break;
+
+                case "list todo":
+                    System.out.println("Tasks todo:");
+                    System.out.println(jsonRepository.getAllTaskByStatus("TODO"));
+                    break;
+
+                case "list in-progress":
+                    System.out.println("Tasks in progress:");
+                    System.out.println(jsonRepository.getAllTaskByStatus("IN_PROGRESS"));
+                    break;
+
+                case "list done":
+                    System.out.println("Tasks done:");
+                    System.out.println(jsonRepository.getAllTaskByStatus("DONE"));
                     break;
 
                 case "add":
