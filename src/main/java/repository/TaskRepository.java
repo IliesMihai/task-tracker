@@ -8,6 +8,8 @@ public interface TaskRepository {
 
     List<Task> getAllTasks();
 
+    List<Task> getAllTaskByStatus(String status);
+
     void addTask(Task task);
 
     void deleteTask(Long id);
