@@ -19,4 +19,4 @@ https://roadmap.sh/projects/task-tracker
     cd Task-Tracker
     ```
 
-2. Compile and run `Application.java`
+2. Compile `.java` files, then run `Application.java`
