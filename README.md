@@ -12,6 +12,11 @@ https://roadmap.sh/projects/task-tracker
 - **Help:** Display the help menu.
 
 ## 🚀 How to Run
+
+### Prerequisites
+- Java 17 or higher installed
+
+### Steps
 1. Clone the repository:
 
     ```bash
@@ -19,5 +24,16 @@ https://roadmap.sh/projects/task-tracker
     cd Task-Tracker
     ```
 
-2. Compile files, then run `Application.java`.
-3. Run `help` command.
+2. Compile the Java files:
+
+    ```bash
+    javac -d out src/main/java/**/*.java
+    ```
+
+3. Run the application:
+
+    ```bash
+    java -cp out src.main.java.Application
+    ```
+
+4. Use the `help` command to see available options.
