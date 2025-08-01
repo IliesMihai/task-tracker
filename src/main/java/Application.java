@@ -1,7 +1,10 @@
 package src.main.java;
 
+import src.main.java.command.Command;
+import src.main.java.command.CommandFactory;
+import src.main.java.command.CommandHistory;
+import src.main.java.repository.TaskRepository;
 import src.main.java.repository.TaskRepositoryImpl;
-import src.main.java.model.Task;
 
 import java.util.Scanner;
 
@@ -9,109 +12,43 @@ public class Application {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
-        TaskRepositoryImpl jsonRepository = new TaskRepositoryImpl();
+        TaskRepository jsonRepository = new TaskRepositoryImpl();
+        CommandHistory history = new CommandHistory();
+        CommandFactory commandFactory = new CommandFactory(jsonRepository, scanner, history);
 
         System.out.println("Welcome to the Java Task CLI App! Type 'help' to see commands.");
 
         while (isRunning) {
             System.out.print("task-cli > ");
             String input = scanner.nextLine().trim().toLowerCase();
-            Long id;
 
-            switch (input) {
-                case "help":
-                    System.out.println("Available commands:");
-                    System.out.println("  - help : Show available commands");
-                    System.out.println("  - list : List all tasks");
-                    System.out.println("  - list todo : List all tasks with status \"todo\"");
-                    System.out.println("  - list in-progress : List all tasks with status \"in progress\"");
-                    System.out.println("  - list done : List all tasks with status \"done\"");
-                    System.out.println("  - add : Add a new task");
-                    System.out.println("  - update : Update a task");
-                    System.out.println("  - mark-in-progress : Mark a task as \"in progress\"");
-                    System.out.println("  - mark-done : Mark a task as \"done\"");
-                    System.out.println("  - delete : Delete a task");
-                    System.out.println("  - exit : Exit the application");
-                    break;
-
-                case "list":
-                    System.out.println("Tasks:");
-                    System.out.println(jsonRepository.getAllTasks());
-                    break;
-
-                case "list todo":
-                    System.out.println("Tasks todo:");
-                    System.out.println(jsonRepository.getAllTaskByStatus("TODO"));
-                    break;
-
-                case "list in-progress":
-                    System.out.println("Tasks in progress:");
-                    System.out.println(jsonRepository.getAllTaskByStatus("IN_PROGRESS"));
-                    break;
-
-                case "list done":
-                    System.out.println("Tasks done:");
-                    System.out.println(jsonRepository.getAllTaskByStatus("DONE"));
-                    break;
-
-                case "add":
-                    Task task = new Task();
-                    System.out.println("Enter the task description:");
-                    task.setDescription(scanner.nextLine());
-                    jsonRepository.addTask(task);
-                    System.out.println("Task added: " + task.getDescription());
-                    break;
-
-                case "update":
-                    System.out.println("Enter the task id:");
-                    id = Long.parseLong(scanner.nextLine());
-                    System.out.println("Enter the new task description:");
-                    var description = scanner.nextLine();
-                    if (!jsonRepository.checkIfTaskExists(id)){
-                        System.out.println("Task not found. Run \"list\" to see all tasks.");
-                        break;
-                    }
-                    jsonRepository.updateTaskDescription(id, description);
-                    System.out.println("Task updated.");
-                    break;
-
-                case "mark-in-progress":
-                    System.out.println("Enter the task id to mark as \"in progress\":");
-                    id = Long.parseLong(scanner.nextLine());
-                    if (!jsonRepository.checkIfTaskExists(id)){
-                        System.out.println("Task not found. Run \"list\" to see all tasks.");
-                        break;
-                    }
-                    jsonRepository.updateTaskStatus((id), "IN_PROGRESS");
-                    System.out.println("Task status updated.");
-                    break;
-
-                case "mark-done":
-                    System.out.println("Enter the task id to mark as \"done\":");
-                    id = Long.parseLong(scanner.nextLine());
-                    if (!jsonRepository.checkIfTaskExists(id)){
-                        System.out.println("Task not found. Run \"list\" to see all tasks.");
-                        break;
-                    }
-                    jsonRepository.updateTaskStatus((id), "DONE");
-                    System.out.println("Task status updated.");
-                    break;
-
-                case "delete":
-                    System.out.println("Enter the task id to delete:");
-                    jsonRepository.deleteTask(Long.parseLong(scanner.nextLine()));
-                    System.out.println("Task deleted.");
-                    break;
-
-                case "exit":
-                    System.out.println("Exiting... Goodbye!");
-                    isRunning = false;
-                    break;
-
-                default:
-                    System.out.println("Unknown command. Type 'help' for a list of commands.");
+            if (input.equals("exit")) {
+                handleExit();
+                isRunning = false;
+            } else {
+                handleCommand(input, commandFactory, history);
             }
         }
         scanner.close();
+    }
+
+    public static void handleCommand(String input, CommandFactory commandFactory, CommandHistory history) {
+        Command command = commandFactory.createCommand(input);
+        
+        if (command != null) {
+            if (input.equals("undo") || input.equals("redo") || input.equals("history")) {
+                // These commands handle themselves and shouldn't go through history
+                command.execute();
+            } else {
+                // Regular commands go through history for undo/redo tracking
+                history.executeCommand(command);
+            }
+        } else {
+            System.out.println("Unknown command. Type 'help' for a list of commands.");
+        }
+    }
+
+    private static void handleExit() {
+        System.out.println("Exiting... Goodbye!");
     }
 }
