@@ -1,5 +1,6 @@
 package src.main.java.command;
 
+import src.main.java.model.Task;
 import src.main.java.repository.TaskRepository;
 
 import java.util.Scanner;
@@ -37,7 +38,7 @@ public class UpdateTaskCommand extends Command {
         this.oldDescription = taskRepository.getAllTasks().stream()
             .filter(task -> task.getId().equals(taskId))
             .findFirst()
-            .map(task -> task.getDescription())
+            .map(Task::getDescription)
             .orElse(null);
         
         taskRepository.updateTaskDescription(taskId, newDescription);
